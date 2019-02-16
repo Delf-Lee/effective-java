@@ -45,12 +45,47 @@ private final Collection<Stamp> stamps = ...;
 
 > `List<Object>` 같은 매개변수화 타입을 사용할 때와 달리 `List` 같은로 타입을 사용하면 타입 안정성을 잃게된다.
 
-### 예시
+### 로 타입 사용의 예시1
+``` java
+// 코드 26-4 런타임에 실패한다. - unsafeAdd 메서드가 로 타입(List)을 사용 (156-157쪽)
+public class Raw {
+    public static void main(String[] args) {
+        List<String> strings = new ArrayList<>();
+        unsafeAdd(strings, Integer.valueOf(42));
+        String s = strings.get(0); // 컴파일러가 자동으로 형변환 코드를 넣어준다.
+    }
+
+    private static void unsafeAdd(List list, Object o) {
+        list.add(o);
+    }
+}
+```
+- 이 코드는 컴파일은 되지만 경고가 발생한다.
+  - 로 타입인 `List`를 사용하였기 때문이다.
+- 이대로 실행하면 `strings.get(0)`의 결과를 형변환하려 할 때 `ClassCastException`을 던진다.
+  - `Integer`를 `String`으로 변환하려 시도했기 때문
+- 이 형변환은 컴파일러가 자동으로 만들어준 것이라 보통은 실패하지 않는다.
+  - 컴파일러의 경고를 무시했기 때문에 런타임 에러가 발생한 것
+
+### 로 타입 사용의 예시2
+2개의 집합(Set)을 받아 공통 원소를 반환하는 메서드를 작성한다고 해보자.
+``` java
+static int numElementsInCommon(Set s1, Set s2) { // 로 타입 사용
+    int result = 0;
+    for(Object o1 : s1) {
+        if(s2,contains(o2)) result++;
+        return result;
+    }
+}
+```
+- 이 메서드는 동작은 하지만 로타입을 사용해 안전하지 않다.
+- 대신 **비한정적 와일드카드 타입(unbounded wildcard type)** 을 사용하는 것이 좋다.
 
 ## 비한정적 와일드카드 타입(unbounded wildcard type)
-제네릭 타입을 쓰고 싶지만 실데 타입 매개변수가 무엇인지 신경쓰고 싶지 않는다면 물음표(?)를 사용하자.
+제네릭 타입을 쓰고 싶지만 실데 타입 매개변수가 무엇인지 신경쓰고 싶지 않는다면 물음표(?)를 사용하자. 타입 안전하며 유연하다.
 - ex) `Set<E>`의 비 한정적 와일드카드 타입은 `Set<?>`
 
+[로 타입 사용의 예시2]의 코드를 와일드카드 타입을 사용해 다시 선언한 모습이다.
 ``` java
 static int numElementsInCommon(Set<?> s1, Set<?> s2) { ... }
 ```
@@ -63,3 +98,35 @@ static int numElementsInCommon(Set<?> s1, Set<?> s2) { ... }
 
 즉, 비한정적 와일드카드 타입은 컬렉션 타입 불변식을 훼손하지 못하게 막았다. 구체적으로는 (null 이외의) 어떤 원소도 `Collection<?>`에 넣지 못하게 했으며 컬렉션에서 꺼낼 수 있는 객체 타입도 전혀 알 수 없게 했다.
   - 이러한 제약을 받아들일 수 없다면 제네릭 메서드나 한정적 와일드카드 타입을 사용하면 된다.
+
+
+## 로 타입을 사용하는 예외
+### 1. class 리터럴에는 로 타입을 써야한다.
+- 자바 명세는 class 리터럴에 매개변수화 타입을 사용하지 못하게했다(배열과 기본 타입은 허용).
+  - ex1) `List.class`, `String[].class`, `int.class`는 허용
+  - ex2) `List<String>.class`, `List<?>.class`는 비허용
+### 2. `instanceof`
+- 런타임에는 제네릭타입 정보가 지워지므로 `instanceof` 연산자는 비한정적 와일드카드 타입 이외의 매개변수화 타입에는 적용할 수 없다.
+- 로 타입이든 비한정적 와일드카드 타입이든 `instanceof`는 완전히 똑같이 동작한다.
+  - 꺾쇠괄호와 물음표는 코드만 지저분하게 만드므로 차라리 로 타입을 쓰는 편이 깔끔하다.
+    ``` java
+    if(o instaceof Set) {       // 로 타입
+        Set<?> s = (Set<?>) o;  // 와일드카드 타입, 사용시에는 형변환이 필요하다.
+        ...
+    }
+    ```
+
+## 용어
+한글 용어|영문 용어|예|아이템
+-|-|-|-|-
+매개변수화 타입|parameterized type|`List<String>`|아이템 26
+실제 타입 매개변수|actual type parameter|`String`|아이템 26
+제네릭 타입 매개변수|generic type|`List<E>`|아이템 26, 29
+정규 타입 매개변수|formal type parameter|`E`|아이템 26
+비한정적 와일드카드 타입|unbounded wildcard type|`List<?>`|아이템 26
+로 타입|raw type|`List`|아이템 26
+한정적 타입 매개변수|bounded type parameter|`<E extends Number>`|아이템 29
+재귀적 타입 한정|recusive type bound|`<T extends Comparable<T>>`|아이템 30
+한정적 와딜드카드 타입|bounded wildcard type|`List<? extends Nuber>`|아이템 31
+제네릭 메서드|gereric method|`static <E> List<E>`<br>`asList(E[] a)`|아이템 30
+타입 토큰|type token|`String.class`|아이템 33
