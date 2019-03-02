@@ -14,7 +14,7 @@
 - 힙 오염은 파라미터화된 타입의 변수가 파라미터화된 타입이 아닌 객체를 참고할 때 발생한다.
   - 이 상황은 컴파일 시 unchecked 경고를 발생하는 코드를 수행할 때 일어난다.
   - unchecked 경고가 컴파일 또는 런타임에 발생하면, 파라미터화 된 타입을 포함하는 동작의 올바름을 검증할 수 없다. 
-  - 예를들어 힙 오염은 로 타입과 파라미터화된 타입을 섞어 쓸 때나,  unchecked 경고를 내는 타입 캐스트를 수행할 때 발생한다.
+  - 예를들어 힙 오염은 로 타입과 파라미터화된 타입을 섞어 쓸 때나, unchecked 경고를 내는 타입 캐스트를 수행할 때 발생한다.
 - **reference**
   - https://reiphiel.tistory.com/entry/potential-heap-pollution-via-varargs-parameter
   - https://en.wikipedia.org/wiki/Heap_pollution
@@ -63,7 +63,6 @@ static <T> T[] toArray(T... args) {
 }
 ```
 
-
 ``` java
 static <T> T[] pickTwo(T a, T b, T c) {
     switch(ThreadLocalRandom.current().nextInt(3)) {
@@ -103,3 +102,12 @@ public static void main(String[] args) {
   - 아이템 28의 조언을 따라 varargs대신 List 매개변수로 바꿀 수 있다.
     - 이 방식의 장점은 컴파일러가 이 메서드의 안전성을 검증하고 보장한다.
     - 단점은 속도가 살짝 느릴 수 있고, 코드가 살짝 지저분해질 수 있다.
+
+---
+# 메모
+> 힙 오염은 컴파일 시 unchecked 경고를 발생하는 코드를 수행할 때 일어난다.
+힙 오염이 일어날만한 짓을 했을 때 unchecked 경고를 발생하는게 아니라?
+
+- 힙 오염
+  - 지금 이해한걸론... 힙오염은 로타입을 이용한 잘못된 타입캐스팅을 시도할 때 발생하는 것 같다.
+  - 근데 왜 "힙" 오염일까?
