@@ -10,8 +10,8 @@
 - [**아이템 5**](./chapter02/item05.md). 자원을 직접 명시하지 말고 의존 객체를 주입하라 
 - [**아이템 6**](./chapter02/item06.md). 불필요한 객체 생성을 피하라 
 - [**아이템 7**](./chapter02/item07.md). 다 쓴 객체 참조를 해제하라 
-- **아이템 8**. finalizer와 cleaner 사용을 피하라 
-- **아이템 9**. try-finally보다는 try-with-resources를 사용하라 
+- [**아이템 8**](./chapter02/item08.md). finalizer와 cleaner 사용을 피하라 
+- [**아이템 9**](./chapter02/item09.md). try-finally보다는 try-with-resources를 사용하라 
 
 ### 3장 모든 객체의 공통 메서드 
 - [**아이템 10**](./chapter03/item10.md). equals는 일반 규약을 지켜 재정의하라 
