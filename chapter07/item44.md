@@ -44,8 +44,13 @@ static class LambdaLinkedHashMap extends LinkedHashMap<Integer, String> {
         return removalFunction.remove(this, eldest);
     }
 }
+
+@FunctionalInterface
+interface EldestEntryRemovalFunction<K, V> {
+    boolean remove(Map<K, V> map, Map.Entry<K, V> eldest);
+}
 ```
-잘 돌아가지만 굳이 사용할 이유는 없다. 다음과 같은 이유로 위처럼 구현하기 보다 표준 함수형 인터페이스가를 사용하길 권장한다.
+잘 돌아가지만 굳이 사용할 이유는 없다. 다음과 같은 이유로 위처럼 구현하기 보다 표준 함수형 인터페이스(이 경우에는 `BiPredicate`)를 사용하길 권장한다.
 - API가 다루는 개념의 수가 줄어 익히기 더 쉬워진다.
 - 유용한 디폴트 메서드들을 많이 제공하므로 다른 코드와의 상호운용성도 크게 좋아질 것이다.
 
@@ -76,12 +81,15 @@ static class BiPredicateLinkedHashMap extends LinkedHashMap<Integer, String> {
 
 인터페이스|함수 시그니처|예
 ---|---|---
-`UnaryPerator<T>`| `T apply(T t)`| `String::toLowerCase`
+`UnaryOperator<T>`| `T apply(T t)`| `String::toLowerCase`
 `BinaryOperator<T>`|`T apply(t t1, T t2)`|`BigInteger::add`
 `Predicate<T>`|`boolean test(T t)`|`Collection::isEmpty`
 `Function<T, R>`|`R apply(T t)`|`Arrays::asList`
 `Supplier<T>`|`T get()`|`Instance::now`
-`Cinsumer<T>`|`void accept(T t)`|`System.out::println`
+`Consumer<T>`|`void accept(T t)`|`System.out::println`
+
+## 박싱된 기본타입
+표준 함수형 인터페이스의 대부분은 기본 타입만 지원한다. 그렇다고 기본 함수형 인터페이스에 박싱된 기본 타입을 넣어 사용하지는 말자. 계산량이 많을 때는 성능이 처참히 느려질 수 있다.
 
 ## 직접 작성하기 vs 표준 함수형 인터페이스 사용하기
 다음 조건에 맞다면 표준 함수형 인터페이스 사용하는 것 보다는 직접 작성하는 것을 고려해봐도 좋다.
