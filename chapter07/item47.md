@@ -16,7 +16,7 @@
   - 간단하게 표현할 방법이 있다면 전용 컬렉션을 구현하는 것을 고려하라.
 - 그냥 단순하게 "구현하기 쉬운" 쪽을 선택해도 괜찮다.
 ### 한계
-- 리스트(컬렉션)을 스트립으로 변환 어댑터를 사용할 때는 성능 감소와 코드가 지저분해지는 것을 감안해야 한다.
+- 리스트(컬렉션)을 스트림으로 변환 어댑터를 사용할 때는 성능 감소와 코드가 지저분해지는 것을 감안해야 한다.
 
 ## 의문
 ### for-each문
@@ -52,3 +52,68 @@ public static <E> Iterable<E> iterableOf(Stream<E> stream) {
 }
 ```
 ....? 이 구문을 보면, steam::iterator의 값은 그냥 `Iterable`의 구현체이다.
+
+ 
+ 
+ ### TAKE1-1
+
+``` java
+for (String s : (Iterable<String>) stringStream.iterator()) {
+    System.out.println(s);
+}
+```
+경고 발생
+컴파일 오류 발생
+```
+Exception in thread "main" java.lang.ClassCastException: java.util.Spliterators$1Adapter cannot be cast to java.lang.Iterable
+```
+
+### TAKE1-2
+``` java
+for (String s : iterableOf(stringStream)) {
+    System.out.println(s);
+}
+```
+``` java
+public static <E> Iterable<E> iterableOf(Stream<E> stream) {
+    return (Iterable<E>) stream.iterator();
+}
+```
+위와 같은 이유와 결과로 당연 오류
+
+### TAKE2-1
+흥미로운 코드를 찾았다.
+``` java
+for (String s : getIterableFromIterator(stringStream)) {
+    System.out.println(s);
+}
+```
+``` java
+public static <T> Iterable<T> getIterableFromIterator(Stream<T> stream) {
+    return new Iterable<T>() {
+        @Override
+        public Iterator<T> iterator() {
+            return stream.iterator();
+        }
+    };
+}
+```
+위 코드는 잘 돌아간다.
+참고로 원본 코드는 `Iterator<T>`를 받아 `Iterable<T>`를 반환한다.
+- https://www.geeksforgeeks.org/convert-iterator-to-iterable-in-java/
+
+### TAKE2-2
+TAKE2-1의 `getIterableFromIterator`메서드는 람다식으로 다음과 같이 표현이 가능하다.
+``` java
+public static <T> Iterable<T> getIterableFromIterator(Stream<T> stream) {
+    return () -> stream.iterator();
+}
+```
+같은 의미로 메서드 참조를 사용하면 이렇다.
+
+``` java
+public static <T> Iterable<T> getIterableFromIterator(Stream<T> stream) {
+    return stream::iterator;
+}
+```
+(돌아가는) `iterableOf`메서드와 모양이 같아졌다.
