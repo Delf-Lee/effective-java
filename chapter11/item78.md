@@ -13,7 +13,10 @@
 
 - 참고
   - https://parkcheolu.tistory.com/14
+
+
 ## `volatile` 키워드
+### 안전실패
 ### `Synchronized` 키워드 
 
 ### `Synchronized`와 `volatile`의 차이
@@ -29,9 +32,8 @@
   - 같은 CPU Cache를 공유한다면 가시성 문제는 해결되는가?
 
 
-
-
 ### Reference
 - [Java의 volatile 키워드에 대한 이해 - IT 세미 덕후](http://kwanseob.blogspot.com/2012/08/java-volatile.html)
 - [자바 volatile 키워드 - 박철우 블로그](https://parkcheolu.tistory.com/16)
 - [자바 메모리 모델 - 박철우 블로그](https://parkcheolu.tistory.com/14)
+- [Java의 고유 락(intrinsic lock)에 대해](http://happinessoncode.com/2017/10/04/java-intrinsic-lock/#재진입-가능성-Reentrancy)
